@@ -20,7 +20,7 @@ const SIZE_OF_ONE_BLOCK =
   (SCREEN_WIDTH - 2 * MARGIN - (BLOCKS_IN_ONE_ROW - 1) * SPACE_BETWEEN_BLOCKS) /
   BLOCKS_IN_ONE_ROW;
 const BLOCK_WIDTH = SIZE_OF_ONE_BLOCK + SPACE_BETWEEN_BLOCKS;
-const HALF_BLOCK = SIZE_OF_ONE_BLOCK / 2;
+const HALF_BLOCK = 0;
 
 const BoardScreen = () => {
   const boardConfig = useMemo(
@@ -31,62 +31,58 @@ const BoardScreen = () => {
   const yFromTopLeft = useSharedValue(0);
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
-  const endX = useSharedValue(0);
-  const endY = useSharedValue(0);
+  // const endX = useSharedValue(0);
+  // const endY = useSharedValue(0);
   const xCount = useSharedValue(0);
   const yCount = useSharedValue(0);
   const tapStart = useSharedValue(false);
 
-  const setCoordX = useCallback((x, type) => {
-    const xC = Math.floor(x / BLOCK_WIDTH);
-    if (type === "start") {
-      startX.value = xC;
-      tapStart.value = true;
-    }
-
-    if (type === "end") {
-      if (x > startX.value * BLOCK_WIDTH) {
-        if (x > xC * BLOCK_WIDTH + HALF_BLOCK) {
-          endX.value = xC;
-        } else {
-          endX.value = xC - 1;
-        }
-      } else {
-        if (x < xC * BLOCK_WIDTH + HALF_BLOCK) {
-          endX.value = xC;
-        } else {
-          endX.value = xC + 1;
-        }
-      }
-    }
-
-    tapStart.value = false;
+  const setCoordX = useCallback((x) => {
+    startX.value = Math.floor(x / BLOCK_WIDTH);
+    tapStart.value = true;
   }, []);
 
-  const setCoordY = useCallback((y, type) => {
+  const setCoordY = useCallback((y) => {
+    startY.value = Math.floor(y / BLOCK_WIDTH);
+    tapStart.value = true;
+  }, []);
+
+  const calcWord = useCallback((x, y) => {
+    let endX = 0;
+    let endY = 0;
+    const xC = Math.floor(x / BLOCK_WIDTH);
     const yC = Math.floor(y / BLOCK_WIDTH);
-    if (type === "start") {
-      startY.value = yC;
-      tapStart.value = true;
-    }
 
-    if (type === "end") {
-      if (y > startY.value * BLOCK_WIDTH) {
-        if (y > yC * BLOCK_WIDTH + HALF_BLOCK) {
-          endY.value = yC;
-        } else {
-          endY.value = yC - 1;
-        }
+    if (x > startX.value * BLOCK_WIDTH) {
+      if (x > xC * BLOCK_WIDTH + HALF_BLOCK) {
+        endX = xC;
       } else {
-        if (y < yC * BLOCK_WIDTH + HALF_BLOCK) {
-          endY.value = yC;
-        } else {
-          endY.value = yC + 1;
-        }
+        endX = xC - 1;
       }
-
-      tapStart.value = false;
+    } else {
+      if (x < xC * BLOCK_WIDTH + HALF_BLOCK) {
+        endX = xC;
+      } else {
+        endX = xC + 1;
+      }
     }
+
+    if (y > startY.value * BLOCK_WIDTH) {
+      if (y > yC * BLOCK_WIDTH + HALF_BLOCK) {
+        endY = yC;
+      } else {
+        endY = yC - 1;
+      }
+    } else {
+      if (y < yC * BLOCK_WIDTH + HALF_BLOCK) {
+        endY = yC;
+      } else {
+        endY = yC + 1;
+      }
+    }
+
+    console.log(startX.value, startY.value, "start", endX, endY, "end");
+    tapStart.value = false;
   }, []);
 
   const calcXCount = useCallback((x) => {
@@ -101,8 +97,8 @@ const BoardScreen = () => {
 
   const gestureEventHandler = useAnimatedGestureHandler({
     onStart: (event, ctx) => {
-      runOnJS(setCoordX)(event.x, "start");
-      runOnJS(setCoordY)(event.y, "start");
+      runOnJS(setCoordX)(event.x);
+      runOnJS(setCoordY)(event.y);
       xFromTopLeft.value = event.x;
       yFromTopLeft.value = event.y;
     },
@@ -113,8 +109,9 @@ const BoardScreen = () => {
       runOnJS(calcYCount)(event.y);
     },
     onEnd: (event, ctx) => {
-      runOnJS(setCoordX)(event.x, "end");
-      runOnJS(setCoordY)(event.y, "end");
+      // runOnJS(setCoordX)(event.x, "end");
+      // runOnJS(setCoordY)(event.y, "end");
+      runOnJS(calcWord)(event.x, event.y);
       xFromTopLeft.value = 0;
       yFromTopLeft.value = 0;
       // startX.value = 0;
@@ -133,68 +130,60 @@ const BoardScreen = () => {
               backgroundColor:
                 tapStart.value &&
                 (xCount.value === yCount.value
-                  ? (cId * BLOCK_WIDTH + HALF_BLOCK >
-                      startX.value * BLOCK_WIDTH &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK < xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK >
-                        startY.value * BLOCK_WIDTH &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK < yFromTopLeft.value &&
+                  ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
                       cId - rId === startX.value - startY.value) ||
-                    (cId * BLOCK_WIDTH + HALF_BLOCK >
-                      startX.value * BLOCK_WIDTH &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK < xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK <
+                    (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH <
                         startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK > yFromTopLeft.value &&
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
                       rId + cId === startX.value + startY.value) ||
-                    (cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK / 2 <
+                    (cId * BLOCK_WIDTH <
                       startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK / 2 >
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
                         xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK <
+                      rId * BLOCK_WIDTH <
                         startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK > yFromTopLeft.value &&
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
                       cId - rId === startX.value - startY.value) ||
-                    (cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK / 2 <
+                    (cId * BLOCK_WIDTH <
                       startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK / 2 >
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
                         xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK >
-                        startY.value * BLOCK_WIDTH &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK < yFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
                       cId + rId === startX.value + startY.value)
-                  : (cId * BLOCK_WIDTH + HALF_BLOCK >
-                      startX.value * BLOCK_WIDTH &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK < xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK >
-                        startY.value * BLOCK_WIDTH &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK <
-                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      xCount.value > yCount.value) ||
-                    (cId * BLOCK_WIDTH + HALF_BLOCK <
+                  : xCount.value > yCount.value
+                  ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                    (cId * BLOCK_WIDTH <
                       startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK > xFromTopLeft.value &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK >
-                        startY.value * BLOCK_WIDTH &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK <
-                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      xCount.value > yCount.value) ||
-                    (rId * BLOCK_WIDTH + HALF_BLOCK >
-                      startY.value * BLOCK_WIDTH &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK < yFromTopLeft.value &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK >
-                        startX.value * BLOCK_WIDTH &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK <
-                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      xCount.value < yCount.value) ||
-                    (rId * BLOCK_WIDTH + HALF_BLOCK <
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK)
+                  : (rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                      cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                    (rId * BLOCK_WIDTH <
                       startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      rId * BLOCK_WIDTH + HALF_BLOCK > yFromTopLeft.value &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK >
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
+                      cId * BLOCK_WIDTH + HALF_BLOCK >=
                         startX.value * BLOCK_WIDTH &&
                       cId * BLOCK_WIDTH + HALF_BLOCK <
-                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
-                      xCount.value < yCount.value))
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK))
                   ? "red"
                   : "green",
             };
