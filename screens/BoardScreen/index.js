@@ -20,7 +20,6 @@ const SIZE_OF_ONE_BLOCK =
   (SCREEN_WIDTH - 2 * MARGIN - (BLOCKS_IN_ONE_ROW - 1) * SPACE_BETWEEN_BLOCKS) /
   BLOCKS_IN_ONE_ROW;
 const BLOCK_WIDTH = SIZE_OF_ONE_BLOCK + SPACE_BETWEEN_BLOCKS;
-const HALF_BLOCK = 0;
 
 const BoardScreen = () => {
   const boardConfig = useMemo(
@@ -48,38 +47,8 @@ const BoardScreen = () => {
   }, []);
 
   const calcWord = useCallback((x, y) => {
-    let endX = 0;
-    let endY = 0;
-    const xC = Math.floor(x / BLOCK_WIDTH);
-    const yC = Math.floor(y / BLOCK_WIDTH);
-
-    if (x > startX.value * BLOCK_WIDTH) {
-      if (x > xC * BLOCK_WIDTH + HALF_BLOCK) {
-        endX = xC;
-      } else {
-        endX = xC - 1;
-      }
-    } else {
-      if (x < xC * BLOCK_WIDTH + HALF_BLOCK) {
-        endX = xC;
-      } else {
-        endX = xC + 1;
-      }
-    }
-
-    if (y > startY.value * BLOCK_WIDTH) {
-      if (y > yC * BLOCK_WIDTH + HALF_BLOCK) {
-        endY = yC;
-      } else {
-        endY = yC - 1;
-      }
-    } else {
-      if (y < yC * BLOCK_WIDTH + HALF_BLOCK) {
-        endY = yC;
-      } else {
-        endY = yC + 1;
-      }
-    }
+    const endX = Math.floor(x / BLOCK_WIDTH);
+    const endY = Math.floor(y / BLOCK_WIDTH);
 
     console.log(startX.value, startY.value, "start", endX, endY, "end");
     tapStart.value = false;
@@ -180,9 +149,8 @@ const BoardScreen = () => {
                       startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
                       rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
                         yFromTopLeft.value &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK >=
-                        startX.value * BLOCK_WIDTH &&
-                      cId * BLOCK_WIDTH + HALF_BLOCK <
+                      cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH <
                         startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK))
                   ? "red"
                   : "green",
