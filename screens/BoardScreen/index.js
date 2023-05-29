@@ -30,8 +30,6 @@ const BoardScreen = () => {
   const yFromTopLeft = useSharedValue(0);
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
-  // const endX = useSharedValue(0);
-  // const endY = useSharedValue(0);
   const xCount = useSharedValue(0);
   const yCount = useSharedValue(0);
   const tapStart = useSharedValue(false);
@@ -47,11 +45,67 @@ const BoardScreen = () => {
   }, []);
 
   const calcWord = useCallback((x, y) => {
+    let str = "";
     const endX = Math.floor(x / BLOCK_WIDTH);
     const endY = Math.floor(y / BLOCK_WIDTH);
 
-    console.log(startX.value, startY.value, "start", endX, endY, "end");
-    tapStart.value = false;
+    if (Math.abs(endX - startX.value) > Math.abs(endY - startY.value)) {
+      if (endX > startX.value) {
+        for (let i = startX.value; i <= endX; i++) {
+          str += boardConfig[startY.value][i];
+        }
+      } else {
+        for (let i = startX.value; i >= endX; i--) {
+          str += boardConfig[startY.value][i];
+        }
+      }
+    } else if (Math.abs(endX - startX.value) < Math.abs(endY - startY.value)) {
+      if (endY > startY.value) {
+        for (let i = startY.value; i <= endY; i++) {
+          str += boardConfig[i][startX.value];
+        }
+      } else {
+        for (let i = startY.value; i >= endY; i--) {
+          str += boardConfig[i][startX.value];
+        }
+      }
+    } else {
+      if (endX > startX.value && endY < startY.value) {
+        for (
+          let i = startX.value, j = startY.value;
+          i <= endX, j >= endY;
+          i++, j--
+        ) {
+          str += boardConfig[i][j];
+        }
+      } else if (endX > startX.value && endY > startY.value) {
+        for (
+          let i = startX.value, j = startY.value;
+          i <= endX, j <= endY;
+          i++, j++
+        ) {
+          str += boardConfig[i][j];
+        }
+      } else if (endX < startX.value && endY < startY.value) {
+        for (
+          let i = startX.value, j = startY.value;
+          i >= endX, j >= endY;
+          i--, j--
+        ) {
+          str += boardConfig[i][j];
+        }
+      } else {
+        for (
+          let i = startX.value, j = startY.value;
+          i >= endX, j <= endY;
+          i--, j++
+        ) {
+          str += boardConfig[i][j];
+        }
+      }
+    }
+
+    console.log(str);
   }, []);
 
   const calcXCount = useCallback((x) => {
@@ -78,13 +132,10 @@ const BoardScreen = () => {
       runOnJS(calcYCount)(event.y);
     },
     onEnd: (event, ctx) => {
-      // runOnJS(setCoordX)(event.x, "end");
-      // runOnJS(setCoordY)(event.y, "end");
+      tapStart.value = false;
       runOnJS(calcWord)(event.x, event.y);
       xFromTopLeft.value = 0;
       yFromTopLeft.value = 0;
-      // startX.value = 0;
-      // startY.value = 0;
     },
   });
 
