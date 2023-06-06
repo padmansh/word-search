@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     height: SIZE_OF_ONE_BLOCK,
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
   },
 });
 
