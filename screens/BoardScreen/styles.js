@@ -17,6 +17,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
+  container: {
+    marginVertical: getScaledDimension(20, "width"),
+  },
+  word: {
+    width: "50%",
+    textTransform: "capitalize",
+    fontSize: 18,
+    marginVertical: 2,
+  },
+  wordContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
 });
 
 export default styles;

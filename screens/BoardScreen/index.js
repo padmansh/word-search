@@ -11,16 +11,214 @@ import Animated, {
 } from "react-native-reanimated";
 import { PanGestureHandler } from "react-native-gesture-handler";
 
-const words = [
-  "ABBA",
-  "JASOOS",
-  "SATYAM",
-  "ANIKET",
-  "KANISHK",
-  "PRIYAN",
-  "TEMARY",
-  "LAUGHING",
-  "TOMATO",
+const wordList = [
+  "ASSAM",
+  "BIHAR",
+  "GOA",
+  "GUJARAT",
+  "HARYANA",
+  "JHARKHAND",
+  "KARNATAKA",
+  "KERALA",
+  "MANIPUR",
+  "MEGHALAYA",
+  "MIZORAM",
+  "NAGALAND",
+  "ORISSA",
+  "PUNJAB",
+  "RAJASTHAN",
+  "SIKKIM",
+  "TAMILNADU",
+  "TELAGANA",
+  "TRIPURA",
+  "DELHI",
+  "HYDERABAD",
+  "AMARAVATI",
+  "ITANGAR",
+  "DISPUR",
+  "PATNA",
+  "RAIPUR",
+  "PANAJI",
+  "SHIMLA",
+  "SRINAGAR",
+  "JAMMU",
+  "RANCHI",
+  "BANGALORE",
+  "BHOPAL",
+  "MUMBAI",
+  "IMPHAL",
+  "SHILLONG",
+  "AIZAWI",
+  "KOHIMA",
+  "JAIPUR",
+  "GANGTOK",
+  "CHENNAI",
+  "HYDERABAD",
+  "AGARTALA",
+  "DEHRADUN",
+  "LUCKNOW",
+  "KOLKATA",
+  "CAPITAL",
+  "PORTBLAIR",
+  "SILVASSA",
+  "DAMAN",
+  "DELHI",
+  "KAVARATTI",
+  "ALBANIA",
+  "ALGERIA",
+  "ANDORRA",
+  "ANGOLA",
+  "ARGENTINA",
+  "ARMENIA",
+  "AUSTRALIA",
+  "AUSTRIA",
+  "BAHRAIN",
+  "BARBADOS",
+  "BELARUS",
+  "BELGIUM",
+  "BELIZE",
+  "BENIN",
+  "BHUTAN",
+  "BOLIVIA",
+  "CHAD",
+  "CHILE",
+  "CHINA",
+  "COLOMBIA",
+  "COMOROS",
+  "DENMARK",
+  "DOMINICA",
+  "ERITREA",
+  "ESTONIA",
+  "ESWATINI",
+  "ETHIOPIA",
+  "FIJI",
+  "FINLAND",
+  "FRANCE",
+  "GABON",
+  "GEORGIA",
+  "GERMANY",
+  "GHANA",
+  "GREECE",
+  "GRENADA",
+  "GUATEMALA",
+  "GUINEA",
+  "GUYANA",
+  "HAITI",
+  "HONDURAS",
+  "HUNGARY",
+  "ICELAND",
+  "INDIA",
+  "INDONESIA",
+  "IRAN",
+  "IRAQ",
+  "IRELAND",
+  "ISRAEL",
+  "ITALY",
+  "JAMAICA",
+  "JAPAN",
+  "JORDAN",
+  "KENYA",
+  "KIRIBATI",
+  "KOSOVO",
+  "KUWAIT",
+  "LAOS",
+  "LATVIA",
+  "LEBANON",
+  "LESOTHO",
+  "LIBERIA",
+  "LIBYA",
+  "LITHUANIA",
+  "MALAWI",
+  "MALAYSIA",
+  "MALDIVES",
+  "MALI",
+  "MALTA",
+  "MAURITIUS",
+  "MEXICO",
+  "MOLDOVA",
+  "MONACO",
+  "MONGOLIA",
+  "MOROCCO",
+  "MYANMAR",
+  "NAMIBIA",
+  "NAURU",
+  "NEPAL",
+  "NICARAGUA",
+  "NIGER",
+  "NIGERIA",
+  "NORWAY",
+  "OMAN",
+  "TAIWAN",
+  "TANZANIA",
+  "THAILAND",
+  "TOGO",
+  "TONGA",
+  "TUNISIA",
+  "TURKEY",
+  "TUVALU",
+  "APPLE",
+  "ORANGE",
+  "PEAR",
+  "CHERRY",
+  "NECTARINE",
+  "GRAPE",
+  "MANGO",
+  "BLUEBERRY",
+  "PLUM",
+  "BANANA",
+  "RASPBERRY",
+  "MANDARIN",
+  "JACKFRUIT",
+  "PAPAYA",
+  "KIWI",
+  "PINEAPPLE",
+  "LIME",
+  "LEMON",
+  "APRICOT",
+  "MELON",
+  "COCONUT",
+  "AVOCADO",
+  "PEACH",
+  "GREATAUNT",
+  "UNCLE",
+  "AUNT",
+  "FATHER",
+  "MOTHER",
+  "SISTER",
+  "BROTHER",
+  "HUSBAND",
+  "WIFE",
+  "COUSIN",
+  "NEPHEW",
+  "NIECE",
+  "SON",
+  "DAUGHTER",
+  "GRANDSON",
+  "BOLT",
+  "NAIL",
+  "BRADAWL",
+  "HANDSAW",
+  "NUT",
+  "SCREW",
+  "WRENCH",
+  "BACKSAW",
+  "MALLET",
+  "HAMMER",
+  "HACKSAW",
+  "CHAINSAW",
+  "BRACE",
+  "TOOLBOX",
+  "CORKSCREW",
+  "PLUNGER",
+  "APPLE",
+  "ORANGE",
+  "TABLE",
+  "ELEPHANT",
+  "TOTAL",
+  "SUPER",
+  "REACT",
+  "ANGULAR",
+  "SELENIUM",
 ];
 const alphabets = [
   "A",
@@ -92,6 +290,16 @@ const BoardScreen = () => {
   const xCount = useSharedValue(0);
   const yCount = useSharedValue(0);
   const tapStart = useSharedValue(false);
+  const [words, setWords] = useState([]);
+
+  const chooseWords = () => {
+    const w = [];
+    for (let i = 0; i < 8; i++) {
+      w.push(wordList[Math.floor(Math.random() * wordList.length)]);
+    }
+
+    setWords(w);
+  };
 
   const makeInitialBoard = useCallback(() => {
     boardRef.current = [];
@@ -523,7 +731,7 @@ const BoardScreen = () => {
         }
       }
     },
-    [boardConfig]
+    [boardConfig, words]
   );
 
   const calcXCount = useCallback((x) => {
@@ -547,14 +755,47 @@ const BoardScreen = () => {
       if (!tapStart.value) {
         tapStart.value = true;
       }
-      xFromTopLeft.value = event.x;
-      yFromTopLeft.value = event.y;
-      runOnJS(calcXCount)(event.x);
-      runOnJS(calcYCount)(event.y);
+      xFromTopLeft.value =
+        event.x > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.x < 0
+          ? 0
+          : event.x;
+      yFromTopLeft.value =
+        event.y > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.y < 0
+          ? 0
+          : event.y;
+      runOnJS(calcXCount)(
+        event.x > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.x < 0
+          ? 0
+          : event.x
+      );
+      runOnJS(calcYCount)(
+        event.y > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.y < 0
+          ? 0
+          : event.y
+      );
     },
     onEnd: (event) => {
       tapStart.value = false;
-      runOnJS(calcWord)(event.x, event.y);
+      runOnJS(calcWord)(
+        event.x > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.x < 0
+          ? 0
+          : event.x,
+        event.y > (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          ? (BLOCKS_IN_ONE_ROW - 1) * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK
+          : event.y < 0
+          ? 0
+          : event.y
+      );
       xFromTopLeft.value = 0;
       yFromTopLeft.value = 0;
     },
@@ -654,8 +895,66 @@ const BoardScreen = () => {
                       cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
                       cId * BLOCK_WIDTH <
                         startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK))
-                  ? "red"
-                  : "green",
+                  ? "black"
+                  : "white",
+              borderWidth:
+                tapStart.value &&
+                (xCount.value === yCount.value
+                  ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                      cId - rId === startX.value - startY.value) ||
+                    (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
+                      rId + cId === startX.value + startY.value) ||
+                    (cId * BLOCK_WIDTH <
+                      startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
+                      cId - rId === startX.value - startY.value) ||
+                    (cId * BLOCK_WIDTH <
+                      startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                      cId + rId === startX.value + startY.value)
+                  : xCount.value > yCount.value
+                  ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                    (cId * BLOCK_WIDTH <
+                      startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        xFromTopLeft.value &&
+                      rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK)
+                  : (rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                      rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                      cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                    (rId * BLOCK_WIDTH <
+                      startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                      rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                        yFromTopLeft.value &&
+                      cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                      cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK))
+                  ? 0
+                  : 1,
             };
           }, []),
           {
@@ -664,7 +963,75 @@ const BoardScreen = () => {
           },
         ]}
       >
-        <Text style={{ fontSize: FONT_SIZE }}>{col?.value}</Text>
+        <Animated.Text
+          style={[
+            { fontSize: FONT_SIZE },
+            useAnimatedStyle(() => {
+              return {
+                color:
+                  tapStart.value &&
+                  (xCount.value === yCount.value
+                    ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                        cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                        rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                        cId - rId === startX.value - startY.value) ||
+                      (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                        cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH <
+                          startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          yFromTopLeft.value &&
+                        rId + cId === startX.value + startY.value) ||
+                      (cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH <
+                          startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          yFromTopLeft.value &&
+                        cId - rId === startX.value - startY.value) ||
+                      (cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                        rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                        cId + rId === startX.value + startY.value)
+                    : xCount.value > yCount.value
+                    ? (cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                        cId * BLOCK_WIDTH < xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                        rId * BLOCK_WIDTH <
+                          startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                      (cId * BLOCK_WIDTH <
+                        startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        cId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          xFromTopLeft.value &&
+                        rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                        rId * BLOCK_WIDTH <
+                          startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK)
+                    : (rId * BLOCK_WIDTH >= startY.value * BLOCK_WIDTH &&
+                        rId * BLOCK_WIDTH < yFromTopLeft.value &&
+                        cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                        cId * BLOCK_WIDTH <
+                          startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK) ||
+                      (rId * BLOCK_WIDTH <
+                        startY.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK &&
+                        rId * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK >=
+                          yFromTopLeft.value &&
+                        cId * BLOCK_WIDTH >= startX.value * BLOCK_WIDTH &&
+                        cId * BLOCK_WIDTH <
+                          startX.value * BLOCK_WIDTH + SIZE_OF_ONE_BLOCK))
+                    ? "white"
+                    : "black",
+              };
+            }, []),
+          ]}
+        >
+          {col?.value}
+        </Animated.Text>
         {col?.strike ? col?.strikeDirection?.map(strikeMap) : null}
       </Animated.View>
     ),
@@ -687,22 +1054,34 @@ const BoardScreen = () => {
   );
 
   useEffect(() => {
-    makeInitialBoard();
+    if (words.length > 0) {
+      words.forEach((word) => {
+        fillWordInGrid(word);
+      });
 
-    words.forEach((word) => {
-      fillWordInGrid(word);
-    });
+      fillEmptyBlocks();
 
-    fillEmptyBlocks();
-
-    setBoardConfig(boardRef?.current);
-  }, []);
+      setBoardConfig(boardRef?.current);
+    } else {
+      chooseWords();
+      makeInitialBoard();
+    }
+  }, [words]);
 
   return (
     <ScreenWrapper>
       <PanGestureHandler onGestureEvent={gestureEventHandler}>
-        <Animated.View>{boardConfig?.map(rowMap)}</Animated.View>
+        <Animated.View style={styles.container}>
+          {boardConfig?.map(rowMap)}
+        </Animated.View>
       </PanGestureHandler>
+      <View style={styles.wordContainer}>
+        {words?.map((w, idx) => (
+          <Text style={styles.word} key={idx}>
+            {w}
+          </Text>
+        ))}
+      </View>
     </ScreenWrapper>
   );
 };
