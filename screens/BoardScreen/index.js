@@ -291,6 +291,7 @@ const BoardScreen = () => {
   const yCount = useSharedValue(0);
   const tapStart = useSharedValue(false);
   const [words, setWords] = useState([]);
+  const [completedWords, setCompletedWords] = useState([]);
 
   const chooseWords = () => {
     const w = [];
@@ -597,6 +598,10 @@ const BoardScreen = () => {
               boardRef.current[startY.value][i].strikeDirection.push("H");
             }
 
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
+            }
+
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
           }
         } else {
@@ -608,6 +613,10 @@ const BoardScreen = () => {
             for (let i = startX.value; i >= endX; i--) {
               boardRef.current[startY.value][i].strike = true;
               boardRef.current[startY.value][i].strikeDirection.push("H");
+            }
+
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
             }
 
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
@@ -627,6 +636,10 @@ const BoardScreen = () => {
               boardRef.current[i][startX.value].strikeDirection.push("V");
             }
 
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
+            }
+
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
           }
         } else {
@@ -638,6 +651,10 @@ const BoardScreen = () => {
             for (let i = startY.value; i >= endY; i--) {
               boardRef.current[i][startX.value].strike = true;
               boardRef.current[i][startX.value].strikeDirection.push("V");
+            }
+
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
             }
 
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
@@ -663,6 +680,10 @@ const BoardScreen = () => {
               boardRef.current[j][i].strikeDirection.push("DU");
             }
 
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
+            }
+
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
           }
         } else if (endX > startX.value && endY > startY.value) {
@@ -682,6 +703,10 @@ const BoardScreen = () => {
             ) {
               boardRef.current[j][i].strike = true;
               boardRef.current[j][i].strikeDirection.push("DD");
+            }
+
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
             }
 
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
@@ -705,6 +730,10 @@ const BoardScreen = () => {
               boardRef.current[j][i].strikeDirection.push("DD");
             }
 
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
+            }
+
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
           }
         } else {
@@ -724,6 +753,10 @@ const BoardScreen = () => {
             ) {
               boardRef.current[j][i].strike = true;
               boardRef.current[j][i].strikeDirection.push("DU");
+            }
+
+            if (!completedWords.includes(result)) {
+              setCompletedWords([...completedWords, result]);
             }
 
             setBoardConfig(JSON.parse(JSON.stringify(boardRef?.current)));
@@ -1053,6 +1086,42 @@ const BoardScreen = () => {
     [boardConfig]
   );
 
+  const wordMap = useCallback(
+    (w, idx) => (
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          width: "50%",
+        }}
+        key={idx}
+      >
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          {completedWords?.includes(w) ? (
+            <View
+              style={{
+                position: "absolute",
+                height: 2,
+                backgroundColor: "black",
+                width: "100%",
+              }}
+            />
+          ) : null}
+          <Text style={styles.word} key={idx}>
+            {w}
+          </Text>
+        </View>
+      </View>
+    ),
+    [completedWords]
+  );
+
   useEffect(() => {
     if (words.length > 0) {
       words.forEach((word) => {
@@ -1075,13 +1144,7 @@ const BoardScreen = () => {
           {boardConfig?.map(rowMap)}
         </Animated.View>
       </PanGestureHandler>
-      <View style={styles.wordContainer}>
-        {words?.map((w, idx) => (
-          <Text style={styles.word} key={idx}>
-            {w}
-          </Text>
-        ))}
-      </View>
+      <View style={styles.wordContainer}>{words?.map(wordMap)}</View>
     </ScreenWrapper>
   );
 };

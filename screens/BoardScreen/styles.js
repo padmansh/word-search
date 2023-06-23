@@ -21,10 +21,11 @@ const styles = StyleSheet.create({
     marginVertical: getScaledDimension(20, "width"),
   },
   word: {
-    width: "50%",
+    // width: "50%",
     textTransform: "capitalize",
     fontSize: 18,
     marginVertical: 2,
+    // backgroundColor: "red",
   },
   wordContainer: {
     flexDirection: "row",
